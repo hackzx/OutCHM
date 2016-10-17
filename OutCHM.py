@@ -834,7 +834,10 @@ with open('exp.htm', 'w') as f1, open('exp.hhc', 'w') as f2, open('exp.hhk', 'w'
     f4.write(exp_hhp)
     f5.write(php_htm)
 
-os.system('"C:\Program Files (x86)\HTML Help Workshop\hhc.exe" exp.hhp')
+# os.system('"C:\Program Files (x86)\HTML Help Workshop\hhc.exe" exp.hhp')
+CurrentPath=os.getcwd()
+LibPath=CurrentPath + '\lib\hhc.exe'
+os.system('{0} exp.hhp'.format(LibPath))
 
 os.remove('exp.htm')
 os.remove('exp.hhc')
